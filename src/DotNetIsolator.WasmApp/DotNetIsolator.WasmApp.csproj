@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="MessagePack" Version="2.5.103" />
-		<PackageReference Include="Wasi.Sdk" Version="0.1.4-preview.10020" />
+		<PackageReference Include="Microsoft.NET.Runtime.WebAssembly.Wasi.Sdk" Version="8.0.5" />
 	</ItemGroup>
 
 	<Target Name="GetWasiRuntimePackAssemblies" Outputs="@(WasiRuntimePackAssemblies)">
@@ -26,12 +26,7 @@
 		to call the entrypoint prior to setting up the assembly search hook.
 		-->
 		<ItemGroup>
-			<_WasmBundleFilesToExclude Include="@(WasmBundleFiles)"
-									   Condition="%(WasmBundleFiles.WasmRole) == 'assembly'
-										   AND %(WasmBundleFiles.Filename) != 'System.Private.CoreLib'
-										   AND %(WasmBundleFiles.Filename) != 'DotNetIsolator.WasmApp'
-										   AND %(WasmBundleFiles.Filename) != 'MessagePack'
-										   AND %(WasmBundleFiles.Filename) != 'MessagePack.Annotations'" />
+			<_WasmBundleFilesToExclude Include="@(WasmBundleFiles)" Condition="%(WasmBundleFiles.WasmRole) == 'assembly'&#xD;&#xA;										   AND %(WasmBundleFiles.Filename) != 'System.Private.CoreLib'&#xD;&#xA;										   AND %(WasmBundleFiles.Filename) != 'DotNetIsolator.WasmApp'&#xD;&#xA;										   AND %(WasmBundleFiles.Filename) != 'MessagePack'&#xD;&#xA;										   AND %(WasmBundleFiles.Filename) != 'MessagePack.Annotations'" />
 			<WasmBundleFiles Remove="@(_WasmBundleFilesToExclude)" />
 		</ItemGroup>
 	</Target>
@@ -41,7 +36,7 @@
 			<WasiPreinitializeSourceFile>@(WasiSdkBinOutputFiles)</WasiPreinitializeSourceFile>
 			<WasiPreinitializerArgs>$(WasiPreinitializerArgs) --allow-wasi --init-func _start --keep-init-func false</WasiPreinitializerArgs>
 			<WasiPreinitializerArgs>$(WasiPreinitializerArgs) --mapdir /::$(WasiRuntimePackRoot)lib/$(TargetFramework)</WasiPreinitializerArgs>
-			<WasiPreinitializerArgs>$(WasiPreinitializerArgs) --wasm-bulk-memory=true --inherit-env true -o &quot;$(WasiPreinitializeSourceFile).pre&quot; &quot;$(WasiPreinitializeSourceFile)&quot;</WasiPreinitializerArgs>
+			<WasiPreinitializerArgs>$(WasiPreinitializerArgs) --wasm-bulk-memory=true --inherit-env true -o "$(WasiPreinitializeSourceFile).pre" "$(WasiPreinitializeSourceFile)"</WasiPreinitializerArgs>
 		</PropertyGroup>
 		<Message Importance="high" Text="Running WebAssembly preinitializer on $(WasiPreinitializeSourceFile)" />
 		<!-- The assembly search hook can't work during preinitialization because there's no .NET host to supply assemblies -->
